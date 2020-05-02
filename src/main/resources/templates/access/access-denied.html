@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="https://www.thymeleaf.org" 
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+    	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"/>
+        <title>Spring Security Access Denied</title>
+    </head>
+    <body>
+        <h1>Hey bud, too bad!</h1>
+        
+        <p>You ain't got permission to see that page</p>
+
+        <p><a th:href="@{/home}">Click here</a> to see the home page</p>
+    </body>
+</html>

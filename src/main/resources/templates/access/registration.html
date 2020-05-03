@@ -2,6 +2,10 @@
 <html
 	xmlns="http://www.w3.org/1999/xhtml" 
 	xmlns:th="https://www.thymeleaf.org">
+	<head>
+    	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"/>
+        <title>Registration</title>
+    </head>
 	<body>
 		<h1 th:text="#{label.form.title}">form</h1>
 		<form action="/" th:object="${user}" method="POST" enctype="utf8">

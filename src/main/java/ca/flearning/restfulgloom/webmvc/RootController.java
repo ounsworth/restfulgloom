@@ -2,10 +2,14 @@ package ca.flearning.restfulgloom.webmvc;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import ca.flearning.restfulgloom.webmvc.dto.UserDto;
 
 @Controller
 public class RootController {
@@ -36,7 +40,10 @@ public class RootController {
 	}
 	
 	@RequestMapping(value ="/registration")
-	public String showRegistration(){
+	public String showRegistration(WebRequest request, Model model){
+		// We bind our user data-transfer-object to the DOM here, so that we can use
+		// it in the Thymeleaf template for registration
+		model.addAttribute("user", new UserDto());
 		return "access/registration";
 	}
 	

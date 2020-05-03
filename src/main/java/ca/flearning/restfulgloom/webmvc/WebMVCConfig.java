@@ -16,6 +16,8 @@ public class WebMVCConfig {
 	    viewResolver.setPrefix("/resources/templates");
 	    viewResolver.setSuffix(".html");
 
+	    System.out.println("    >> Configured View Resolver");
+	    
 	    return viewResolver;
 	}
 }

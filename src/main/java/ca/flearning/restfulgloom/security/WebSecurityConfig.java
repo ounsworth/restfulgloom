@@ -3,11 +3,14 @@ package ca.flearning.restfulgloom.security;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -19,14 +22,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override 
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception{
 		auth.jdbcAuthentication().dataSource(datasource);
+		
+		System.out.println("    >> Configured AuthenticationManagerBuilder");
+		System.out.println("    >> H2:     user:user");
+		System.out.println("    >>         admin:admin");
 	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
-		
 		http.authorizeRequests()
-			// root & home open to public
+			// root, home, & registration open to public
 			.antMatchers("/", "/home", "/registration").permitAll()
 			//allow h2 console access to admins only
 			.antMatchers("/h2-console/**").hasRole("ADMIN")
@@ -45,5 +50,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout()
 			.permitAll();
 		http.exceptionHandling().accessDeniedPage("/access-denied");
+		
+		System.out.println(">> Configured HttpSecurity");
+	}
+	 
+	@Bean
+	public PasswordEncoder passwordEncoder(){
+		return new BCryptPasswordEncoder();
 	}
 }

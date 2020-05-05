@@ -73,6 +73,17 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- Was going to use groovy as scripting language, but it was much more than I needed
+			switched over to Spring Expression Language (SpEL)
+		<dependency>
+		    <groupId>org.codehaus.groovy</groupId>
+		    <artifactId>groovy-all</artifactId>
+		    <version>3.0.3</version>
+		    <type>pom</type>
+		</dependency>
+		-->
+
 	</dependencies>
 
 	<build>

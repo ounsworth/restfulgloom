@@ -51,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.permitAll();
 		http.exceptionHandling().accessDeniedPage("/access-denied");
 		
-		System.out.println(">> Configured HttpSecurity");
+		System.out.println("    >> Configured HttpSecurity");
 	}
 	 
 	@Bean

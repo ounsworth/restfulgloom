@@ -6,8 +6,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.data.rest.core.annotation.RestResource;
+
 @Entity
 @Table(name="CLASSES")
+@RestResource(rel="class", path="class")
 public class GClass {
 
 	@Id
@@ -23,6 +26,4 @@ public class GClass {
 	public void setClassId(int classId) {
 		this.classId = classId;
 	}
-	
-	
 }

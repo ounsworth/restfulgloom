@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +16,10 @@ import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import ca.flearning.restfulgloom.entities.AbilityActionLine;
@@ -32,6 +37,12 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	@Autowired // Tell the application-context to inject our EMF
 	private EntityManagerFactory entityManagerFactory;
 	
+	@Autowired
+	private ApplicationContext ac;
+	
+	//@Autowired
+	//private PasswordEncoder pe;
+	
 	/****
 	 * Not sure where this kinda thing really belongs. 
 	 * Going to throw some data in the H2 database so that I have something to look at/ test with
@@ -39,11 +50,28 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	 * 
 	 * Also, I'm not using any Java logging functionality here. This entire class is not meant to be
 	 * production code.
-	 */
+	 ****/
 	@Override
 	public void run(String... args) throws Exception {
-		
 		System.out.println("    >> CommandLineRunner");
+		
+		addDataToH2Database();
+		//printAllBeanNames();
+		
+        System.out.println("    >> CommandLineRunner done");
+    }
+	
+	private void printAllBeanNames() {
+		System.out.println("    >> -----------------------------------------------------------------");
+		
+		String[] names = ac.getBeanNamesForType(Object.class);
+		Arrays.stream(names).forEach(o	-> System.out.println("    >> " + o));
+		
+		System.out.println("    >> -----------------------------------------------------------------");
+	}
+	
+	private void addDataToH2Database() {
+
         Random rand = new Random();
         
         // Start a DB transaction
@@ -113,10 +141,7 @@ public class RestfulgloomRunner implements CommandLineRunner{
         // Commit the persisted changes and close our DB connection
         em.getTransaction().commit();
         em.close();
-        
-        System.out.println("    >> CommandLineRunner done");
-    }
-	
+	}
 	private Character genRandomChar(String name, String note, List<Item> li) {
 		
 		Random rand = new Random(); 

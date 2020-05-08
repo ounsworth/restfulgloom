@@ -28,20 +28,43 @@ create table CHARACTERS (
 	primary key(character_id),
 	constraint FK_C_CLASS foreign key (class_id) references CLASSES (class_id)
 );
-
+	
 create table ITEMS(
-	item_id BIGINT not null AUTO_INCREMENT,
+	item_id BIGINT not null,
+	name varchar not null,
+	item_catagory varchar not null,
+	image_path varchar,
 	primary key(item_id)
 );
 
-create table ABILITIES(
-	ability_id BIGINT not null AUTO_INCREMENT,
-	primary key(ability_id)
+create table ABILITY_CARDS(
+	ability_card_id BIGINT not null AUTO_INCREMENT,
+	name varchar not null,
+	level int not null,
+	initiative int not null,
+	image_path varchar,
+	primary key(ability_card_id)
+);
+
+create table ABILITY_ACTION_LINES(
+	ability_action_id BIGINT not null AUTO_INCREMENT,
+	ability_card_id BIGINT not null,
+	top boolean not null,
+	order_num int not null,
+	description varchar not null,
+	max_enhancements int not null,
+	primary key(ability_action_id),
+	constraint FK_AAL_ABILITY_CARDS foreign key (ability_card_id) references ABILITY_CARDS (ability_card_id)
 );
 
 create table PERKS(
 	perk_id BIGINT not null AUTO_INCREMENT,
 	primary key(perk_id)
+);
+
+create table ENHANCEMENTS(
+	enhancement_id BIGINT not null AUTO_INCREMENT,
+	primary key(enhancement_id)
 );
 
 create table NOTES(
@@ -50,23 +73,24 @@ create table NOTES(
 	primary key(note_id)
 );
 
-create table CHARACTER_ITEM(
+create table CHARACTERS_ITEMS(
 	character_id BIGINT not null,
 	item_id BIGINT not null,
+	equip_slot varchar not null,
 	primary key (character_id, item_id),
 	constraint FK_CI_CHARACTER foreign key (character_id) references CHARACTERS (character_id),
 	constraint FK_CI_ITEM foreign key (item_id) references ITEMS (item_id)
 );
 
-create table CHARACTER_ABILITY(
+create table CHARACTERS_ABILITY_CARDS(
 	character_id BIGINT not null,
-	ability_id BIGINT not null,
-	primary key (character_id, ability_id),
+	ability_card_id BIGINT not null,
+	primary key (character_id, ability_card_id),
 	constraint FK_CA_CHARACTER foreign key (character_id) references CHARACTERS (character_id),
-	constraint FK_CA_ABILITY foreign key (ability_id) references ABILITIES (ability_id)
+	constraint FK_CA_ABILITY foreign key (ability_card_id) references ABILITY_CARDS (ability_card_id)
 );
 
-create table CHARACTER_PERK(
+create table CHARACTERS_PERKS(
 	character_id BIGINT not null,
 	perk_id BIGINT not null,
 	primary key (character_id, perk_id),
@@ -74,7 +98,7 @@ create table CHARACTER_PERK(
 	constraint FK_CP_PERK foreign key (perk_id) references PERKS (perk_id)
 );
 
-create table CHARACTER_NOTE(
+create table CHARACTERS_NOTES(
 	character_id BIGINT not null,
 	note_id BIGINT not null,
 	primary key (character_id, note_id),

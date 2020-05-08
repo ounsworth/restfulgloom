@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OrderColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -25,41 +25,38 @@ public class Character {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long characterId;
 	
-	@Column(name="health", nullable=false, unique=false)
+	@Column(name="health", nullable=false)
 	private int health = 0;
-	@Column(name="exp", nullable=false, unique=false)
+	@Column(name="exp", nullable=false)
 	private int exp = 0;
-	@Column(name="gold", nullable=false, unique=false)
+	@Column(name="gold", nullable=false)
 	private int gold = 0;
-	@Column(name="check_marks", nullable=false, unique=false)
+	@Column(name="check_marks", nullable=false)
 	private int checkMarks = 0;
-	@Column(name="name", nullable=false, unique=false)
+	@Column(name="name", nullable=false)
 	private String name = "No Name";
-
-	@ManyToOne(optional=false, cascade=CascadeType.ALL)
+	
+	@ManyToOne(optional=false, cascade=CascadeType.PERSIST)
 	@JoinColumn(name="class_id")
 	private GClass charClass = new GClass();
 	
-	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "CHARACTER_ITEM", 
-             joinColumns = { @JoinColumn(name = "character_id") }, 
-             inverseJoinColumns = { @JoinColumn(name = "item_id") })
-	private List<Item> items = new ArrayList<Item>();
+	@OneToMany(mappedBy = "equipedTo", cascade = CascadeType.ALL)
+	private List<Equip> equiped = new ArrayList<Equip>();
 	
 	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "CHARACTER_ABILITY", 
+    @JoinTable(name = "CHARACTERS_ABILITY_CARDS", 
              joinColumns = { @JoinColumn(name = "character_id") }, 
-             inverseJoinColumns = { @JoinColumn(name = "ability_id") })
-	private List<Ability> abilities = new ArrayList<Ability>();
+             inverseJoinColumns = { @JoinColumn(name = "ability_card_id") })
+	private List<AbilityCard> abilityCards = new ArrayList<AbilityCard>();
 	
 	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "CHARACTER_PERK", 
+    @JoinTable(name = "CHARACTERS_PERKS", 
              joinColumns = { @JoinColumn(name = "character_id") }, 
              inverseJoinColumns = { @JoinColumn(name = "perk_id") })
 	private List<Perk> perks = new ArrayList<Perk>();
 	
 	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "CHARACTER_NOTE", 
+    @JoinTable(name = "CHARACTERS_NOTES", 
              joinColumns = { @JoinColumn(name = "character_id") }, 
              inverseJoinColumns = { @JoinColumn(name = "note_id") })
 	private List<Note> notes = new ArrayList<Note>();
@@ -122,20 +119,20 @@ public class Character {
 		this.charClass = charClass;
 	}
 
-	public List<Item> getItems() {
-		return items;
+	public List<Equip> getEquiped() {
+		return equiped;
 	}
 
-	public void setItems(List<Item> items) {
-		this.items = items;
+	public void setEquiped(List<Equip> equiped) {
+		this.equiped = equiped;
 	}
 
-	public List<Ability> getAbilities() {
-		return abilities;
+	public List<AbilityCard> getAbilityCards() {
+		return abilityCards;
 	}
 
-	public void setAbilities(List<Ability> abilities) {
-		this.abilities = abilities;
+	public void setAbilityCards(List<AbilityCard> abilityCards) {
+		this.abilityCards = abilityCards;
 	}
 
 	public List<Perk> getPerks() {

@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 			// root, home, & registration open to public
-			.antMatchers("/", "/home", "/registration").permitAll()
+			.antMatchers("/", "/home", "/registration", "/api", "/api/**").permitAll()
 			//allow h2 console access to admins only
 			.antMatchers("/h2-console/**").hasRole("ADMIN")
 			.anyRequest().authenticated();

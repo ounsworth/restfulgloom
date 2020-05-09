@@ -1,6 +1,6 @@
-# restfulgloom
+# RestfulGloom
 
-A web application for tracking your Gloomhaven campeign.
+A web application for tracking your Gloomhaven campaign.
 
 ## Architecture
 

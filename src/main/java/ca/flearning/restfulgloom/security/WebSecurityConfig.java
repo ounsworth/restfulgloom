@@ -35,7 +35,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/", "/home", "/registration").permitAll()
 			//allow h2 console access to admins only
 			.antMatchers("/h2-console/**", "/api**").hasRole("ADMIN")
-			.anyRequest().authenticated();
+			.anyRequest().authenticated()
+			.and().oauth2Login();
 		http.csrf()
 			// Don't apply CSRF protection to /h2-console. 
 			// Not safe, but hey - it's fine for development

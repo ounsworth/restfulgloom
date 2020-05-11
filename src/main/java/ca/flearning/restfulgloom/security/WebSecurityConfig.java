@@ -33,14 +33,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 			// root, home, & registration open to public
 			.antMatchers("/", "/home", "/registration").permitAll()
+			// login endpoint
+			.antMatchers("/api/v1/login").permitAll()
 			//allow h2 console access to admins only
-			.antMatchers("/h2-console/**", "/api**").hasRole("ADMIN")
-			.anyRequest().authenticated()
-			.and().oauth2Login();
+			.antMatchers("/h2-console/**").hasRole("ADMIN")
+			.anyRequest().authenticated().and().oauth2Login();
 		http.csrf()
 			// Don't apply CSRF protection to /h2-console. 
 			// Not safe, but hey - it's fine for development
-			.ignoringAntMatchers("/h2-console/**");
+			.ignoringAntMatchers("/h2-console/**", "/api/**");
 		http.headers()
 			//allow use of frame to same origin urls
 			.frameOptions()

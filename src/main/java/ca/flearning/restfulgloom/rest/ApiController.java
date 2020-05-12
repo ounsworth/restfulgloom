@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.Link;
 
 import ca.flearning.restfulgloom.rest.hateoas.MessageModel;
 
@@ -26,6 +27,7 @@ public class ApiController {
 		topLinks.add(linkTo(ApiController.class).withSelfRel());
 		topLinks.add(linkTo(methodOn(ApiController.class).auth()).withRel("authenticate"));
 		topLinks.add(linkTo(ApiController.class).slash("dm").withRel("datamodel"));
+		topLinks.add(new Link("https://github.com/Trequetrum/RestfulGloom", "github"));
 		
 		return topLinks;
 	}

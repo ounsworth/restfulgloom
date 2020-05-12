@@ -21,11 +21,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.flearning.restfulgloom.comp.ItemInfoConverter;
 import ca.flearning.restfulgloom.entities.AbilityActionLine;
 import ca.flearning.restfulgloom.entities.AbilityCard;
 import ca.flearning.restfulgloom.entities.GCharacter;

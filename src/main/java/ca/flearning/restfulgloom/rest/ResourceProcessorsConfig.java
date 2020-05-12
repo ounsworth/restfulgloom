@@ -1,7 +1,6 @@
 package ca.flearning.restfulgloom.rest;
 
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,7 @@ public class ResourceProcessorsConfig {
 		return new RepresentationModelProcessor<EntityModel<GClass>>() {
 			@Override
 		  	public EntityModel<GClass> process(EntityModel<GClass> em) {
-				em.add(new Link("https://github.com/", "github-link"));
+				//em.add(new Link("https://github.com/", "github-link"));
 		    	return em;
 		  	}
 		};

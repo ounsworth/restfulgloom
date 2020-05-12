@@ -16,23 +16,23 @@ public class AbilityActionLine {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long abilityActionId = 0;
+	private long abilityActionId = -1;
 	
 	@ManyToOne(optional=false, cascade=CascadeType.ALL)
 	@JoinColumn(name="ability_card_id")
 	private AbilityCard abilityCard = new AbilityCard();
 	
 	@Column(name = "top")
-	private boolean top = true;
+	private boolean top = false;
 	
-	@Column(name="order_num", nullable=false)
-	private int order = 0;
+	@Column(name="order_num")
+	private int order = -1;
 	
-	@Column(name="description", nullable=false)
-	private String description = "";
+	@Column(name="description")
+	private String description;
 	
-	@Column(name="max_enhancements", nullable=false)
-	private int maxEnhancements = 0;
+	@Column(name="max_enhancements")
+	private int maxEnhancements = -1;
 	
 	public AbilityActionLine() {}
 

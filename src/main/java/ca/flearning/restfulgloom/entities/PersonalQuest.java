@@ -7,22 +7,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="PERKS")
-public class Perk {
+@Table(name="PERSONAL_QUESTS")
+public class PersonalQuest {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long perkId = -1;
-	
-	public Perk() {}
-
-	public long getPerkId() {
-		return perkId;
-	}
-
-	public void setPerkId(int perkId) {
-		this.perkId = perkId;
-	}
+	private long personalQuestId = -1;
 	
 	
 }

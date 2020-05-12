@@ -1,5 +1,5 @@
-[
-  {
+[  
+{
     "id": 1,
     "name": "Boots of Striding",
     "cost": 20,
@@ -1346,7 +1346,7 @@
     "count": 1,
     "cost": 50,
     "slot": "One Hand",
-    "source": "Reward from Solo Scenario #01 — {BR}",
+    "source": "Reward from Solo Scenario #01 â€” {BR}",
     "desc": "Any time you kill an enemy during your turn, gain Shield 1 for the rest of the round."
   },
   {
@@ -1355,7 +1355,7 @@
     "count": 1,
     "cost": 50,
     "slot": "One Hand",
-    "source": "Reward from Solo Scenario #02 — {TI}",
+    "source": "Reward from Solo Scenario #02 â€” {TI}",
     "consumed": true,
     "desc": "During your Heal action, double the value of the Heal."
   },
@@ -1365,7 +1365,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Small Item",
-    "source": "Reward from Solo Scenario #03 — {SW}",
+    "source": "Reward from Solo Scenario #03 â€” {SW}",
     "consumed": true,
     "desc": "During your ranged attack, add +2 Attack and gain Advantage on the entire Attack action, but suffer 2 damage for each attack made."
   },
@@ -1375,7 +1375,7 @@
     "count": 1,
     "cost": 50,
     "slot": "One Hand",
-    "source": "Reward from Solo Scenario #04 — {SC}",
+    "source": "Reward from Solo Scenario #04 â€” {SC}",
     "desc": "Any time you perform a melee attack, add PIERCE 1 to the Attack."
   },
   {
@@ -1384,7 +1384,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Head",
-    "source": "Reward from Solo Scenario #05 — {CH}",
+    "source": "Reward from Solo Scenario #05 â€” {CH}",
     "spent": true,
     "desc": "During your action where an obstacle is created, create one additional obstacle and apply all effects of the action to it."
   },
@@ -1394,7 +1394,7 @@
     "count": 1,
     "cost": 50,
     "slot": "One Hand",
-    "source": "Reward from Solo Scenario #06 — {MT}",
+    "source": "Reward from Solo Scenario #06 â€” {MT}",
     "desc": "Any time you perform an Augment action, add +1 Attack to the entire action."
   },
   {
@@ -1403,7 +1403,7 @@
     "count": 1,
     "cost": 50,
     "slot": "One Hand",
-    "source": "Reward from Solo Scenario #07 — {SK}",
+    "source": "Reward from Solo Scenario #07 â€” {SK}",
     "desc": "When damaged by an attack, you may {lightX} to gain Shield 3 for the attack."
   },
   {
@@ -1412,7 +1412,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Small Item",
-    "source": "Reward from Solo Scenario #09 — {QM}",
+    "source": "Reward from Solo Scenario #09 â€” {QM}",
     "consumed": true,
     "desc": "During your turn, you or any one ally may Refresh one of your spent or consumed items.",
     "faq": "This item cannot be refreshed."
@@ -1423,7 +1423,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Small Item",
-    "source": "Reward from Solo Scenario #10 — {SU}",
+    "source": "Reward from Solo Scenario #10 â€” {SU}",
     "consumed": true,
     "desc": "When a summon you own is damaged by an attack, it suffers no damage instead."
   },
@@ -1433,7 +1433,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Small Item",
-    "source": "Reward from Solo Scenario #11 — {NS}",
+    "source": "Reward from Solo Scenario #11 â€” {NS}",
     "consumed": true,
     "desc": "During your turn, gain INVISIBLE and create dark. {dark}"
   },
@@ -1443,7 +1443,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Head",
-    "source": "Reward from Solo Scenario #12 — {PH}",
+    "source": "Reward from Solo Scenario #12 â€” {PH}",
     "spent": true,
     "desc": "During your turn, POISON and CURSE one enemy within Range 3."
   },
@@ -1453,7 +1453,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Head",
-    "source": "Reward from Solo Scenario #08 — {BE}",
+    "source": "Reward from Solo Scenario #08 â€” {BE}",
     "desc": "Any time you perform a melee attack and you have exactly 1 hit point, add +2 Attack to the Attack."
   },
   {
@@ -1462,7 +1462,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Two Hands",
-    "source": "Reward from Solo Scenario #13 — {SS}",
+    "source": "Reward from Solo Scenario #13 â€” {SS}",
     "desc": "After performing any song action, immediately perform an Attack 2 or Move 2 action."
   },
   {
@@ -1471,7 +1471,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Body",
-    "source": "Reward from Solo Scenario #14 — {DS}",
+    "source": "Reward from Solo Scenario #14 â€” {DS}",
     "desc": "Any time you perform a {Doom} action, MUDDLE the target of the {Doom}."
   },
   {
@@ -1480,7 +1480,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Body",
-    "source": "Reward from Solo Scenario #15 — {SB}",
+    "source": "Reward from Solo Scenario #15 â€” {SB}",
     "desc": "Any time an ally performs a Medical Pack or Large Medical Pack action, they add +1 Heal to their Heal."
   },
   {
@@ -1489,7 +1489,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Legs",
-    "source": "Reward from Solo Scenario #16 — {EL}",
+    "source": "Reward from Solo Scenario #16 â€” {EL}",
     "spent": true,
     "desc": "If you move 5 or more hexes on your turn, create any element. {any}"
   },
@@ -1499,7 +1499,7 @@
     "count": 1,
     "cost": 50,
     "slot": "Two Hands",
-    "source": "Reward from Solo Scenario #17 — {BT}",
+    "source": "Reward from Solo Scenario #17 â€” {BT}",
     "spent": true,
     "desc": "After performing a Command action, play one card from your hand and immediately perform the same side of the card (top or bottom) as the Command action."
   }

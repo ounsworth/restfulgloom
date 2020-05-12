@@ -1,5 +1,6 @@
 package ca.flearning.restfulgloom;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -15,16 +16,19 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.RepresentationModelProcessor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ca.flearning.restfulgloom.comp.ItemInfoConverter;
 import ca.flearning.restfulgloom.entities.AbilityActionLine;
 import ca.flearning.restfulgloom.entities.AbilityCard;
-import ca.flearning.restfulgloom.entities.Character;
+import ca.flearning.restfulgloom.entities.GCharacter;
 import ca.flearning.restfulgloom.entities.Equip;
 import ca.flearning.restfulgloom.entities.GClass;
 import ca.flearning.restfulgloom.entities.Item;
@@ -40,6 +44,9 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	@Autowired
 	private ApplicationContext ac;
 	
+	@Value("${ca.flearning.restfulgloom.data.items}")
+	private String itemInfoFile;
+	
 	//@Autowired
 	//private PasswordEncoder pe;
 	
@@ -53,7 +60,9 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	 ****/
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println("    >> CommandLineRunner");
+		System.out.println("    >> CommandLineRunner start");
+		
+		//ItemInfoConverter.hardCodedConversion();
 		
 		addDataToH2Database();
 		//printAllBeanNames();
@@ -78,38 +87,29 @@ public class RestfulgloomRunner implements CommandLineRunner{
         EntityManager em = entityManagerFactory.createEntityManager();
         em.getTransaction().begin();
         
-        // Generate list of items. They're just named with numbers.
-        // Clearly not real items
-        List<Item> li = new ArrayList<Item>();
-        for(int i = 0; i < 10; i++) {
-        	li.add(new Item(i, "Item#000" + i));
-        }
-        for(int i = 10; i <= 30; i++) {
-        	li.add(new Item(i, "Item#00" + i));
-        }
-        
-        // Persist these items in the DB
-        li.forEach(o -> em.persist(o));
+        // Generate and persist items in the DB
+        Item[] gloomItems = generateItemsFromJSON();
+        Arrays.stream(gloomItems).forEach(o -> em.persist(o));
         
         // Generate some characters, give them a name, note, and some random items
-        List<Character> lc = new ArrayList<Character>();
-        lc.add(genRandomChar("Miles", "This Character is going places", li));
-        lc.add(genRandomChar("Golum", "My precious?", li));
-        lc.add(genRandomChar("3mily", "ZAP ZAP ZAP!", li));
-        lc.add(genRandomChar("Yap", "YapYapYapYapYapYapYapYapYapYapYapYapYapYapYapYap", li));
-        lc.add(genRandomChar("McHammer", "Can't touch this", li));
-        lc.add(genRandomChar("Adrian", "Give me all dem itamz plz!", li));
-        lc.add(genRandomChar("Mike", "Nice try Mike", li));
-        lc.add(genRandomChar("Kiss", "Out of love, there's nobody around, all I hear is the sound of a broken heart", li));
-        lc.add(genRandomChar("Hoobastank", "I'm not a perfect person", li));
-        lc.add(genRandomChar("Verbose", prettyLongString(), li));
+        List<GCharacter> lc = new ArrayList<GCharacter>();
+        lc.add(genRandomChar("Miles", "This Character is going places", gloomItems));
+        lc.add(genRandomChar("Golum", "My precious?", gloomItems));
+        lc.add(genRandomChar("3mily", "ZAP ZAP ZAP!", gloomItems));
+        lc.add(genRandomChar("Yap", "YapYapYapYapYapYapYapYapYapYapYapYapYapYapYapYap", gloomItems));
+        lc.add(genRandomChar("McHammer", "Can't touch this", gloomItems));
+        lc.add(genRandomChar("Adrian", "Give me all dem itamz plz!", gloomItems));
+        lc.add(genRandomChar("Mike", "Nice try Mike", gloomItems));
+        lc.add(genRandomChar("Kiss", "Out of love, there's nobody around, all I hear is the sound of a broken heart", gloomItems));
+        lc.add(genRandomChar("Hoobastank", "I'm not a perfect person", gloomItems));
+        lc.add(genRandomChar("Verbose", prettyLongString(), gloomItems));
        
      	// Persist these characters in the DB
         lc.forEach(o -> em.persist(o));
         
         // Generate some Ability Action lines (Not sure if I'm into these yet, but meh, we'll see where it goes.)
         List<AbilityActionLine> laal = new ArrayList<AbilityActionLine>();
-        for(Character c : lc) {
+        for(GCharacter c : lc) {
         	for(AbilityCard ac : c.getAbilityCards()) {
         		AbilityActionLine newline1 = new AbilityActionLine();
         		newline1.setAbilityCard(ac);
@@ -142,13 +142,26 @@ public class RestfulgloomRunner implements CommandLineRunner{
         em.getTransaction().commit();
         em.close();
 	}
-	private Character genRandomChar(String name, String note, List<Item> li) {
+	
+	private Item[] generateItemsFromJSON() {
+		
+		File itemInfoFile = new File(this.itemInfoFile);
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.readValue(itemInfoFile, Item[].class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	private GCharacter genRandomChar(String name, String note, Item[] li) {
 		
 		Random rand = new Random(); 
 		 
-		Character rtn = new Character();
+		GCharacter rtn = new GCharacter();
 		rtn.setName(name);
-		rtn.setHealth(rand.nextInt(18));
 		rtn.setExp(50 + rand.nextInt(150));
 		rtn.setGold(10 + rand.nextInt(100));
 		rtn.setCheckMarks(rand.nextInt(18));
@@ -156,11 +169,13 @@ public class RestfulgloomRunner implements CommandLineRunner{
 		rtn.setCharClass(new GClass());
 	
 		// Give the character 3 different unique items. 
-		Collections.shuffle(li);	
-		if (li.size() > 2) {
-			rtn.getEquiped().add(new Equip(rtn, "inventory", li.get(0)));
-			rtn.getEquiped().add(new Equip(rtn, "inventory", li.get(1)));
-			rtn.getEquiped().add(new Equip(rtn, "inventory", li.get(2)));
+		// Equip them all, even if that doesn't make any sense
+		List<Item> gloomItems = Arrays.asList(li);
+		Collections.shuffle(gloomItems);	
+		if (gloomItems.size() > 2) {
+			rtn.getEquiped().add(new Equip(rtn, true, gloomItems.get(0)));
+			rtn.getEquiped().add(new Equip(rtn, true, gloomItems.get(1)));
+			rtn.getEquiped().add(new Equip(rtn, true, gloomItems.get(2)));
 		}
 		
 		AbilityCard ac1 = new AbilityCard();
@@ -193,7 +208,7 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	private String prettyLongString() {
 		StringBuilder contentBuilder = new StringBuilder();
 		
-	    try (Stream<String> stream = Files.lines( Paths.get("src/main/resources/static/prettyLongString.txt"), StandardCharsets.UTF_8)) {
+	    try (Stream<String> stream = Files.lines( Paths.get("src/main/resources/data/prettyLongString.txt"), StandardCharsets.UTF_8)) {
 	        stream.forEach(s -> contentBuilder.append(s).append("\n"));
 	    }catch (IOException e) {
 	        e.printStackTrace();

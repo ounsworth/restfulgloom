@@ -22,19 +22,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override 
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception{
 		auth.jdbcAuthentication().dataSource(datasource);
-		
-		System.out.println("    >> Configured AuthenticationManagerBuilder");
-		System.out.println("    >> H2:     user:user");
-		System.out.println("    >>         admin:admin");
 	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 			// root, home, & registration open to public
-			.antMatchers("/", "/home", "/registration").permitAll()
+			.antMatchers("/", "/home", "/registration", "/api", "/api/auth").permitAll()
 			//allow h2 console access to admins only
-			.antMatchers("/h2-console/**", "/api**").hasRole("ADMIN")
+			.antMatchers("/h2-console/**", "/api/dm**").hasRole("ADMIN")
 			.anyRequest().authenticated();
 		http.csrf()
 			// Don't apply CSRF protection to /h2-console. 
@@ -50,8 +46,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout()
 			.permitAll();
 		http.exceptionHandling().accessDeniedPage("/access-denied");
-		
-		System.out.println("    >> Configured HttpSecurity");
 	}
 	 
 	@Bean

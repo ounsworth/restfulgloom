@@ -13,15 +13,15 @@ public class AbilityCard {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long abilityCardId;
+	private long abilityCardId = -1;
 	
-	@Column(name="name", nullable=false)
-	private String name = "";
-	@Column(name="level", nullable=false)
-	private int level = 0;
-	@Column(name="initiative", nullable=false)
-	private int initiative = 0;
-	@Column(name="image_path", nullable=true)
+	@Column(name="name")
+	private String name;
+	@Column(name="level")
+	private int level = -1;
+	@Column(name="initiative")
+	private int initiative = -1;
+	@Column(name="image_path")
 	private String imgPath;
 	
 	public AbilityCard() {}

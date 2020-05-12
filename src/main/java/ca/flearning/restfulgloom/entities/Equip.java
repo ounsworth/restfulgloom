@@ -17,27 +17,46 @@ public class Equip{
 	@Id
 	@ManyToOne(optional=false, fetch = FetchType.LAZY)
 	@JoinColumn(name="character_id")
-	private Character equipedTo;
+	private GCharacter equipedTo;
 	
 	@Id
 	@ManyToOne(optional=false)
 	@JoinColumn(name="item_id")
 	private Item equipedItem;
 	
-	@Column(name="equip_slot", nullable=false)
-	private String equipSlot = "";
+	@Column(name="equipped")
+	private boolean equipped = false;
 
 	public Equip() {}
-	public Equip(Character equipedTo, String equipSlot, Item equipedItem) {
+	public Equip(GCharacter equipedTo, boolean equipped, Item equipedItem) {
 		this.equipedTo = equipedTo;
-		this.equipSlot = equipSlot;
+		this.equipped = equipped;
 		this.equipedItem = equipedItem;
 	}
 
 	@Override
 	public String toString() {
-		return equipedTo.getCharacterId() + "[" + equipSlot + "]=" + equipedItem.getItemId();
+		String rtn = ((equipedTo == null) ? "Unknown" : equipedTo.getName());
+		rtn += (equipped ? "[" + equipedItem.getSlot() + "] = " : "[unequipped] = ");
+		return rtn + ((equipedTo == null) ? "Unknown" : equipedItem.getName());
 	}
 	
-	
+	public GCharacter getEquipedTo() {
+		return equipedTo;
+	}
+	public void setEquipedTo(GCharacter equipedTo) {
+		this.equipedTo = equipedTo;
+	}
+	public Item getEquipedItem() {
+		return equipedItem;
+	}
+	public void setEquipedItem(Item equipedItem) {
+		this.equipedItem = equipedItem;
+	}
+	public boolean isEquipped() {
+		return equipped;
+	}
+	public void setEquipped(boolean equipped) {
+		this.equipped = equipped;
+	}
 }

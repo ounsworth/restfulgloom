@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import ca.flearning.restfulgloom.security.JWTToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -219,6 +220,7 @@ public class RestfulgloomRunner implements CommandLineRunner{
 			String key = br.readLine();
 			// check that they key is there and the right length
 			if (key != null && Base64Utils.decodeFromString(key).length == JWT_KEY_LEN) {
+				JWTToken.setSECRET(key);
 				System.out.println("    JWT signing key loaded from disk");
 			} else {
 				throw new KeyStoreException("JWT Signing key in invalid format.");

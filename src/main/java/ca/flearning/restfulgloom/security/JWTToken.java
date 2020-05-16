@@ -22,16 +22,13 @@ public class JWTToken implements Authentication {
     //TODO: figure out how the fuck to spring-wire this to the application.properties file
     private static String JWT_KEY_FILE = "RunData/jwt.key";
 
-    public static String SECRET = null;  // I would rather throw an NPE than silently use a weak key.
-    public static final String ISSUER = "ca.flearning.restfulgloom";
-
-    static {
-        try {
-            SECRET = new String(Files.readAllBytes(Paths.get(JWT_KEY_FILE)));
-            // do something with everything string
-        } catch (Exception e) {
-        }
+    public static void setSECRET(String SECRET) {
+        JWTToken.SECRET = SECRET;
     }
+
+    private static String SECRET = null;  // I would rather throw an NPE than silently use a weak key.
+                                          // Should be set during boot by RestfulgloomRunner
+    public static final String ISSUER = "ca.flearning.restfulgloom";
 
     public class Token {
         String token;

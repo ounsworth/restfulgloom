@@ -10,10 +10,18 @@
 			"item": [
 				{
 					"name": "v1",
+					"item": [],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "dev",
 					"item": [
 						{
-							"name": "/api/v1/login",
+							"name": "/login/dev",
 							"request": {
+								"auth": {
+									"type": "noauth"
+								},
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -21,19 +29,24 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/login?name=mike",
+									"raw": "{{base_url}}/api/dev/login?name=mike",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"dev",
 										"login"
 									],
 									"query": [
 										{
 											"key": "name",
 											"value": "mike"
+										},
+										{
+											"key": "role",
+											"value": "User",
+											"disabled": true
 										}
 									]
 								}
@@ -42,64 +55,68 @@
 						}
 					],
 					"_postman_isSubFolder": true
-				}
-			]
-		},
-		{
-			"name": "Login",
-			"item": [
+				},
 				{
-					"name": "/login",
+					"name": "/",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/login",
+							"raw": "{{base_url}}/api",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"login"
+								"api"
 							]
 						}
 					},
 					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "277b6965-9c35-4487-8eb6-a9da1573f431",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				},
 				{
-					"name": "/login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{base_url}}/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
+					"listen": "test",
+					"script": {
+						"id": "f04617e8-aeb3-4bbd-9249-084e32dfa2da",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},
@@ -191,6 +208,67 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "/login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			}
 		}
 	]
 }

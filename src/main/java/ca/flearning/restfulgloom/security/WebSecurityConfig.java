@@ -32,6 +32,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
+		// TODO: even for the permitAll() paths, the auth filter is run and puts
+		// TODO: junk in the command-line logs.
 		http.authorizeRequests()
 			// root, home, & registration open to public
 			.antMatchers("/", "/home", "/registration").permitAll()

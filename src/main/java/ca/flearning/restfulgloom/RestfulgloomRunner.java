@@ -1,22 +1,22 @@
 package ca.flearning.restfulgloom;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.security.KeyStoreException;
+import java.security.SecureRandom;
+import java.util.*;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +30,7 @@ import ca.flearning.restfulgloom.entities.GClass;
 import ca.flearning.restfulgloom.entities.Item;
 import ca.flearning.restfulgloom.entities.Note;
 import ca.flearning.restfulgloom.entities.Perk;
+import org.springframework.util.Base64Utils;
 
 @Component
 public class RestfulgloomRunner implements CommandLineRunner{
@@ -57,6 +58,8 @@ public class RestfulgloomRunner implements CommandLineRunner{
 		
 		addDataToH2Database();
 		//printAllBeanNames();
+
+		createJWTSigningKey();
 		
         System.out.println("    >> CommandLineRunner done");
     }
@@ -201,7 +204,60 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	    
 	    return contentBuilder.toString();
 	}
+
+	@Value("${ca.flearning.restfulgloom.security.jwtkeyfile}")
+	private String JWT_KEY_FILE;
+
+	private final int JWT_KEY_LEN = 32;
+
+	@Autowired
+	private ConfigurableApplicationContext ctx;
 	
-	
+	private void createJWTSigningKey() {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(JWT_KEY_FILE));
+			String key = br.readLine();
+			// check that they key is there and the right length
+			if (key != null && Base64Utils.decodeFromString(key).length == JWT_KEY_LEN) {
+				System.out.println("    JWT signing key loaded from disk");
+			} else {
+				throw new KeyStoreException("JWT Signing key in invalid format.");
+			}
+		} catch (Exception e) {
+			// something went wrong, let's create a new key
+			File keyFile = new File(JWT_KEY_FILE);
+
+			// delete it if it exists
+			try {
+				keyFile.delete();
+			} catch (Exception ex) {
+				// do nothing
+			}
+
+			// mkdir
+			try {
+				keyFile.getParentFile().mkdirs();
+			} catch (Exception ex) {
+				// do nothing
+			}
+
+			// create new key
+			try {
+				System.out.println("    Generating new JWT signing key");
+				byte[] keybytes = new byte[JWT_KEY_LEN];
+				SecureRandom.getInstanceStrong().nextBytes(keybytes);
+				BufferedWriter writer = new BufferedWriter(new FileWriter(JWT_KEY_FILE));
+				writer.write(Base64Utils.encodeToString(keybytes));
+				writer.close();
+
+				System.out.println("    JWT signing key written to "+JWT_KEY_FILE);
+			} catch (Exception ex) {
+				// This is fatal because it means we don't have a JWT signing key
+				System.err.println("    FATAL: could not read or create a JWT signing key");
+				System.err.println(ex);
+				ctx.close();
+			}
+		}
+	}
 
 }

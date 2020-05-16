@@ -31,7 +31,7 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
             // parse the token.
             JWTToken authentication = new JWTToken(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (AuthenticationException e) {
+        } catch (Exception e) {
             // do nothing to fail the authentication
             System.err.println(e);
         }

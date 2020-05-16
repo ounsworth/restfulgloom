@@ -4,11 +4,20 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sun.security.util.IOUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
 
@@ -17,11 +26,19 @@ public class JWTToken implements Authentication {
     // Constants are probably a bad idea and should be put into application.properties?
     public static final long EXPIRATION_TIME = 900_000;
 
-    //TODO: move this to a static initializer and a file
-    //TODO: if file exists, use it, if not then create it
-    public static final String SECRET = "SuperStrongSecret";
+    //TODO: figure out how the fuck to spring-wire this to the application.properties file
+    private static String JWT_KEY_FILE = "RunData/jwt.key";
+
+    public static String SECRET = null;  // I would rather throw an NPE than silently use a weak key.
     public static final String ISSUER = "ca.flearning.restfulgloom";
 
+    static {
+        try {
+            SECRET = new String(Files.readAllBytes(Paths.get(JWT_KEY_FILE)));
+            // do something with everything string
+        } catch (Exception e) {
+        }
+    }
 
     public class Token {
         String token;

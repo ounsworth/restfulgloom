@@ -31,9 +31,11 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
             // parse the token.
             JWTToken authentication = new JWTToken(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (BadCredentialsException e) {
+            System.out.println("Auth rejected because: "+e.getMessage());
         } catch (Exception e) {
             // do nothing to fail the authentication
-            System.err.println(e);
+           e.printStackTrace();
         }
         chain.doFilter(req, res);
     }

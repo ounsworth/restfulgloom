@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -30,14 +31,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+
 		http.authorizeRequests()
 			// root, home, & registration open to public
 			.antMatchers("/", "/home", "/registration").permitAll()
 			// login endpoint
-			.antMatchers("/api/v1/login").permitAll()
+			.antMatchers("/api/dev/login").permitAll()
 			//allow h2 console access to admins only
-			.antMatchers("/h2-console/**").hasRole("ADMIN")
-			.anyRequest().authenticated().and().oauth2Login();
+//			.antMatchers("/h2-console/**").hasRole("Admin")
+			// force JWT authentication on all endpoints
+			.antMatchers("/api/**").authenticated().and()
+				.addFilter(new JWTAuthenticationFilter(authenticationManager()));
+			// require Google oath2
+//			.anyRequest().authenticated().and().oauth2Login();
+
+
+		// disable session creation on Spring Security (JSESSIONID);
+		// don't need it since we have a custom JWT
+		// TODO: there's still a JSESSIONID ... not sure why
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 		http.csrf()
 			// Don't apply CSRF protection to /h2-console. 
 			// Not safe, but hey - it's fine for development

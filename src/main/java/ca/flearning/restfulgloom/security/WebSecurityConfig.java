@@ -1,7 +1,5 @@
 package ca.flearning.restfulgloom.security;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			// root, home, & registration open to public
 			.antMatchers("/", "/home", "/registration").permitAll()
 			// login endpoint
+			//TODO: figure out why this doesn't work on any path other than /api
 			.antMatchers("/api/dev/login").permitAll()
 			//allow h2 console access to admins only
 //			.antMatchers("/h2-console/**").hasRole("Admin")

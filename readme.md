@@ -15,3 +15,10 @@ Pre-requisites:
 then run with:
 
     ./mvnw spring-boot:run
+
+## Default Credentials
+
+http://localhost:8080/h2-console
+
+- user: sa
+- pass: \<empty>

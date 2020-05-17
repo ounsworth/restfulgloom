@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/", "/home", "/registration").permitAll()
 			// login endpoint
 			//TODO: figure out why this doesn't work on any path other than /api
-			.antMatchers("/api/dev/login").permitAll()
+			.antMatchers("/api/v1/auth/**").permitAll()
 			//allow h2 console access to admins only
 //			.antMatchers("/h2-console/**").hasRole("Admin")
 			// force JWT authentication on all endpoints

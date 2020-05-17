@@ -1,55 +1,68 @@
 package ca.flearning.restfulgloom.security;
 
+import ca.flearning.restfulgloom.dao.RefreshTokenRepository;
+import ca.flearning.restfulgloom.entities.RefreshToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.codec.Hex;
+import org.springframework.stereotype.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Date;
 
+@Component
 public class JWTToken implements Authentication {
 
     // Constants are probably a bad idea and should be put into application.properties?
-    public static final long EXPIRATION_TIME = 900_000;
+    private static final long EXPIRATION_TIME = 900_000;  // 15 mins
 
-    //TODO: figure out how the fuck to spring-wire this to the application.properties file
-    private static String JWT_KEY_FILE = "RunData/jwt.key";
+    private static String SECRET = null;  // I would rather throw an NPE than silently use a weak key.
+                                          // Should be set during boot by RestfulgloomRunner
 
     public static void setSECRET(String SECRET) {
         JWTToken.SECRET = SECRET;
     }
 
-    private static String SECRET = null;  // I would rather throw an NPE than silently use a weak key.
-                                          // Should be set during boot by RestfulgloomRunner
     public static final String ISSUER = "ca.flearning.restfulgloom";
 
-    public class Token {
+    public static class Token {
         String token;
 
-        public Token(String token) {
-            this.token = token;
-        }
+        /* Constructors */
+        public Token() { }
+        public Token(String token) { this.token = token; }
 
+        /* Getters / Setters */
+        public void setToken(String token) { this.token = token; }
         public String getToken() {
             return token;
         }
     }
 
+    /*** Member Variables ***/
 
-    public String token;
+    private Token token = new Token();
     private User user;
     private boolean isAuthenticated = false;
 
     public JWTToken(User user) {
         this.user = user;
+        this.token = new Token();
     }
+
+    public JWTToken() {  }
 
     /**
      *
@@ -60,7 +73,7 @@ public class JWTToken implements Authentication {
      * @param token
      */
     public JWTToken(String token) throws BadCredentialsException {
-        this.token = token;
+        this.token.setToken(token);
 
         try {
             Jws<Claims> claims = Jwts.parser()
@@ -102,20 +115,23 @@ public class JWTToken implements Authentication {
     @Override
     public JWTToken.Token getCredentials() {
         try {
-            if (token == null) {
-                token = Jwts.builder()
+            if (this.token.getToken() == null) {
+                this.token.setToken(Jwts.builder()
                         .setSubject(user.getName())
                         .setExpiration(new Date(System.currentTimeMillis() + JWTToken.EXPIRATION_TIME))
                         .setIssuer(JWTToken.ISSUER)
                         .setAudience(JWTToken.ISSUER)
                         .signWith(SignatureAlgorithm.HS256, JWTToken.SECRET)
-                        .compact();
+                        .compact()
+                );
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
-        return new Token(token);
+        return this.token;
     }
+
 
     @Override
     public Object getDetails() {
@@ -149,4 +165,5 @@ public class JWTToken implements Authentication {
             return "";
         }
     }
+
 }

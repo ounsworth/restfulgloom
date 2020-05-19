@@ -44,9 +44,6 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	@Value("${ca.flearning.restfulgloom.data.items}")
 	private String itemInfoFile;
 	
-	//@Autowired
-	//private PasswordEncoder pe;
-	
 	/****
 	 * Not sure where this kinda thing really belongs. 
 	 * Going to throw some data in the H2 database so that I have something to look at/ test with

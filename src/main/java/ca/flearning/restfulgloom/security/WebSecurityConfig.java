@@ -27,11 +27,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
+		.antMatchers("/**").permitAll().anyRequest().authenticated();
+		/*
 			// root, home, & registration open to public
 			.antMatchers("/", "/home", "/registration", "/api", "/api/auth").permitAll()
 			//allow h2 console access to admins only
 			.antMatchers("/h2-console/**", "/api/dm**").hasRole("ADMIN")
 			.anyRequest().authenticated();
+		*/
+		
 		http.csrf()
 			// Don't apply CSRF protection to /h2-console. 
 			// Not safe, but hey - it's fine for development

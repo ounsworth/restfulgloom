@@ -32,14 +32,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// TODO: junk in the command-line logs.
 		http.authorizeRequests()
 			// root, home, & registration open to public
-			.antMatchers("/", "/home", "/registration").permitAll()
-			// login endpoint
-			//TODO: figure out why this doesn't work on any path other than /api
-			.antMatchers("/api/v1/auth/**").permitAll()
+			.antMatchers("/api", "/api/auth**").permitAll()
 			//allow h2 console access to admins only
 //			.antMatchers("/h2-console/**").hasRole("Admin")
 			// force JWT authentication on all endpoints
-			.antMatchers("/api/**").authenticated().and()
+			.antMatchers("/api/dm**").authenticated().and()
 				.addFilter(new JWTAuthenticationFilter(authenticationManager()));
 			// require Google oath2
 //			.anyRequest().authenticated().and().oauth2Login();
@@ -58,12 +55,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			//allow use of frame to same origin urls
 			.frameOptions()
 			.sameOrigin();
-		http.formLogin()
-			.loginPage("/login")
-			.permitAll();
-		http.logout()
-			.permitAll();
-		http.exceptionHandling().accessDeniedPage("/access-denied");
 	}
 	 
 	@Bean

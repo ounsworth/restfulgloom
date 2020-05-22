@@ -1,10 +1,16 @@
 package ca.flearning.restfulgloom;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.KeyStoreException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,17 +21,14 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import ca.flearning.restfulgloom.security.JWTToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.RepresentationModelProcessor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Base64Utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,7 +41,7 @@ import ca.flearning.restfulgloom.entities.Item;
 import ca.flearning.restfulgloom.entities.Note;
 import ca.flearning.restfulgloom.entities.Perk;
 import ca.flearning.restfulgloom.entities.Wallet;
-import org.springframework.util.Base64Utils;
+import ca.flearning.restfulgloom.security.JWTToken;
 
 // This is not a production level class, so warnings for unused functions and such 
 // can be ignored without a heavy heart.
@@ -234,7 +237,7 @@ public class RestfulgloomRunner implements ApplicationRunner{
 	    return contentBuilder.toString();
 	}
 
-	@Value("${ca.flearning.restfulgloom.security.jwtkeyfile}")
+	@Value("${ca.flearning.restfulgloom.api.security.jwtkeyfile}")
 	private String JWT_KEY_FILE;
 
 	private final int JWT_KEY_LEN = 32;
@@ -246,6 +249,7 @@ public class RestfulgloomRunner implements ApplicationRunner{
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(JWT_KEY_FILE));
 			String key = br.readLine();
+			br.close();
 			// check that they key is there and the right length
 			if (key != null && Base64Utils.decodeFromString(key).length == JWT_KEY_LEN) {
 				JWTToken.setSECRET(key);

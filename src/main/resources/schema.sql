@@ -14,6 +14,16 @@ create table authorities (
 );
 create unique index ix_auth_username on authorities (username,authority);
 
+create table REFRESHTOKENS (
+	token_id BIGINT not null AUTO_INCREMENT,
+    token varchar_ignorecase(80) unique not null,
+    expiry TIMESTAMP not null,
+    username varchar_ignorecase(50) not null,
+    primary key(token_id)
+--    constraint fk_refreshtokens_users foreign key(username) references users(username)
+);
+--END SECURITY stuff -- Access Control
+
 -- ----------------------------------------------------
 -- Goomhaven Self-Contained Tables (mostly those without foreign keys)
 -- ----------------------------------------------------

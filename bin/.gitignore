@@ -1,28 +1,8 @@
-# RestfulGloom-specific
-RunData/**
-
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-
-*.class
-
-### Mobile Tools for Java (J2ME) ###
-.mtj.tmp/
-
-### Package Files ###
-*.jar
-*.war
-*.ear
-
-### Eclipse files ###
-**/.project
-**/.classpath
-**/.settings/
-blog/bin/
-**/.tern-project
 
 ### STS ###
 .apt_generated
@@ -49,3 +29,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/bin/

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -26,20 +27,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+
+		// TODO: even for the permitAll() paths, the auth filter is run and puts
+		// TODO: junk in the command-line logs.
 		http.authorizeRequests()
-		.antMatchers("/**").permitAll().anyRequest().authenticated();
-		/*
 			// root, home, & registration open to public
-			.antMatchers("/", "/home", "/registration", "/api", "/api/auth").permitAll()
+			.antMatchers("/", "/home", "/registration").permitAll()
+			// login endpoint
+			//TODO: figure out why this doesn't work on any path other than /api
+			.antMatchers("/api/v1/auth/**").permitAll()
 			//allow h2 console access to admins only
-			.antMatchers("/h2-console/**", "/api/dm**").hasRole("ADMIN")
-			.anyRequest().authenticated();
-		*/
-		
+//			.antMatchers("/h2-console/**").hasRole("Admin")
+			// force JWT authentication on all endpoints
+			.antMatchers("/api/**").authenticated().and()
+				.addFilter(new JWTAuthenticationFilter(authenticationManager()));
+			// require Google oath2
+//			.anyRequest().authenticated().and().oauth2Login();
+
+
+		// disable session creation on Spring Security (JSESSIONID);
+		// don't need it since we have a custom JWT
+		// TODO: there's still a JSESSIONID ... not sure why
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 		http.csrf()
 			// Don't apply CSRF protection to /h2-console. 
 			// Not safe, but hey - it's fine for development
-			.ignoringAntMatchers("/h2-console/**");
+			.ignoringAntMatchers("/h2-console/**", "/api/**");
 		http.headers()
 			//allow use of frame to same origin urls
 			.frameOptions()

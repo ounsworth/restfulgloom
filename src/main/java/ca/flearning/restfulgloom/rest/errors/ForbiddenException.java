@@ -1,9 +1,5 @@
-package ca.flearning.restfulgloom.rest;
+package ca.flearning.restfulgloom.rest.errors;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.FORBIDDEN)
 public class ForbiddenException extends RuntimeException {
     // TODO: It's super bad security-wise to return stack traces, but I've done some googling
     // TODO: and I'm not sure how else to throw a 403 from a REST endpoint.

@@ -3,9 +3,9 @@ package ca.flearning.restfulgloom.rest;
 import ca.flearning.restfulgloom.dao.RefreshTokenRepository;
 import ca.flearning.restfulgloom.security.JWTToken;
 import ca.flearning.restfulgloom.entities.RefreshToken;
+import ca.flearning.restfulgloom.rest.errors.ForbiddenException;
 import ca.flearning.restfulgloom.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;

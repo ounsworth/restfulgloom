@@ -1,8 +1,7 @@
-package ca.flearning.restfulgloom.rest;
+package ca.flearning.restfulgloom.rest.errors;
 
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,16 +23,17 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-// We'll need the @Order annotation if we ever implement multiple @ControllerAdvice classes
-//@Order(1)
-@ControllerAdvice
+// All exceptions used by out rest endpoints should be handled here. If handled
+// elsewhere, pay attention to @order, as this swallows up all exceptions eventually
+@ControllerAdvice(basePackages = "ca.flearning.restfulgloom.rest")
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/*****************************
     * Override MVC handlers
     * 
     * Most of these really should be more descriptive than they currently are.
-    * That's work for another day, it seems.
+    * Right now, basically all they do (above our catch-all handler) is pass 
+    * forward their HttpStatus.
     *****************************/
    @Override
    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -141,6 +141,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
        return buildResponseEntity(apiError);
    }
 
+   /*****************************
+    * Handle Everything Else
+    *****************************/
+   @ExceptionHandler(Exception.class)
+   protected ResponseEntity<Object> handleException(Exception ex) {
+	   return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "error", ex));
+   }
+   
    /*****************************
     * Turn an ApiError into a ResponseEntity
     *****************************/

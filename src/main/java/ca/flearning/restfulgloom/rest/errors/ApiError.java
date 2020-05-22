@@ -1,4 +1,4 @@
-package ca.flearning.restfulgloom.rest;
+package ca.flearning.restfulgloom.rest.errors;
 
 import java.time.LocalDateTime;
 import java.util.List;

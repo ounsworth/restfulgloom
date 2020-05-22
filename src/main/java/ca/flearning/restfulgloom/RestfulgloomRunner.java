@@ -17,7 +17,8 @@ import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -25,15 +26,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.flearning.restfulgloom.entities.AbilityActionLine;
 import ca.flearning.restfulgloom.entities.AbilityCard;
-import ca.flearning.restfulgloom.entities.GCharacter;
 import ca.flearning.restfulgloom.entities.Equip;
+import ca.flearning.restfulgloom.entities.GCharacter;
 import ca.flearning.restfulgloom.entities.GClass;
 import ca.flearning.restfulgloom.entities.Item;
 import ca.flearning.restfulgloom.entities.Note;
 import ca.flearning.restfulgloom.entities.Perk;
+import ca.flearning.restfulgloom.entities.Wallet;
 
+// This is not a production level class, so warnings for unused functions and such 
+// can be ignored without a heavy heart.
+@SuppressWarnings("unused")
 @Component
-public class RestfulgloomRunner implements CommandLineRunner{
+public class RestfulgloomRunner implements ApplicationRunner{
 
 	@Autowired // Tell the application-context to inject our EMF
 	private EntityManagerFactory entityManagerFactory;
@@ -53,7 +58,7 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	 * production code.
 	 ****/
 	@Override
-	public void run(String... args) throws Exception {
+	public void run(ApplicationArguments arg0) throws Exception {
 		System.out.println("    >> CommandLineRunner start");
 		
 		//ItemInfoConverter.hardCodedConversion();
@@ -157,7 +162,17 @@ public class RestfulgloomRunner implements CommandLineRunner{
 		GCharacter rtn = new GCharacter();
 		rtn.setName(name);
 		rtn.setExp(50 + rand.nextInt(150));
-		rtn.setGold(10 + rand.nextInt(100));
+		rtn.setWallet(new Wallet(
+				10 + rand.nextInt(100), 
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10)));
 		rtn.setCheckMarks(rand.nextInt(18));
 		
 		rtn.setCharClass(new GClass());

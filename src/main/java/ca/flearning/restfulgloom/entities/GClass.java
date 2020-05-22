@@ -12,8 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("JacksonIgnoreNullFalseZeroFilter")
 @Entity
 @Table(name="CLASSES")
 public class GClass {
@@ -25,8 +29,9 @@ public class GClass {
 	@Column(name="name")
 	private String name;
 	
-	@Column(name="race")
-	private String race;
+	@ManyToOne(cascade=CascadeType.PERSIST)
+	@JoinColumn(name="race_note")
+	private Note race;
 	
 	// Graigheart Example: "#lvl * 2 + 8"
 	@Column(name="health_expresssion")
@@ -34,6 +39,12 @@ public class GClass {
 	
 	@Column(name="image_path")
 	private String imgPath;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "CLASSES_PERKS", 
+             joinColumns = { @JoinColumn(name = "class_id") }, 
+             inverseJoinColumns = { @JoinColumn(name = "perk_id") })
+	private List<Perk> perks = new ArrayList<Perk>();
 	
 	@ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "CLASSES_NOTES", 

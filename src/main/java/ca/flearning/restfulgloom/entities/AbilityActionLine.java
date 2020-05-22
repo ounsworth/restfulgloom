@@ -10,6 +10,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("JacksonIgnoreNullFalseNegFilter")
 @Entity
 @Table(name="ABILITY_ACTION_LINES")
 public class AbilityActionLine {
@@ -24,6 +27,9 @@ public class AbilityActionLine {
 	
 	@Column(name = "top")
 	private boolean top = false;
+	
+	@Column(name = "sub")
+	private boolean sub = false;
 	
 	@Column(name="order_num")
 	private int order = -1;
@@ -83,4 +89,14 @@ public class AbilityActionLine {
 	public void setMaxEnhancements(int maxEnhancements) {
 		this.maxEnhancements = maxEnhancements;
 	}
+
+	public boolean isSub() {
+		return sub;
+	}
+
+	public void setSub(boolean sub) {
+		this.sub = sub;
+	}
+	
+	
 }

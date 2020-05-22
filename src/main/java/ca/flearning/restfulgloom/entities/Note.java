@@ -8,6 +8,9 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("JacksonIgnoreNullFalseZeroFilter")
 @Entity
 @Table(name="NOTES")
 public class Note {

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,6 +17,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("JacksonIgnoreNullFalseZeroFilter")
 @Entity
 @Table(name="CHARACTERS")
 public class GCharacter {
@@ -28,11 +32,12 @@ public class GCharacter {
 	private String name = "No Name";
 	@Column(name="exp")
 	private int exp = -1;
-	@Column(name="gold")
-	private int gold = -1;
 	@Column(name="check_marks")
 	private int checkMarks = -1;
 	
+	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinColumn(name="wallet_id")
+	private Wallet wallet = new Wallet();
 	
 	@ManyToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="class_id")
@@ -82,14 +87,6 @@ public class GCharacter {
 
 	public void setExp(int exp) {
 		this.exp = exp;
-	}
-
-	public int getGold() {
-		return gold;
-	}
-
-	public void setGold(int gold) {
-		this.gold = gold;
 	}
 
 	public int getCheckMarks() {
@@ -147,4 +144,38 @@ public class GCharacter {
 	public void setNotes(List<Note> notes) {
 		this.notes = notes;
 	}
+
+	public Wallet getWallet() {
+		return wallet;
+	}
+
+	public void setWallet(Wallet wallet) {
+		this.wallet = wallet;
+	}
+
+	public GClass getCharacterClass() {
+		return characterClass;
+	}
+
+	public void setCharacterClass(GClass characterClass) {
+		this.characterClass = characterClass;
+	}
+
+	public PersonalQuest getPersonalQuest() {
+		return personalQuest;
+	}
+
+	public void setPersonalQuest(PersonalQuest personalQuest) {
+		this.personalQuest = personalQuest;
+	}
+
+	public List<ActiveCharacter> getActiveCharacters() {
+		return activeCharacters;
+	}
+
+	public void setActiveCharacters(List<ActiveCharacter> activeCharacters) {
+		this.activeCharacters = activeCharacters;
+	}
+	
+	
 }

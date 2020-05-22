@@ -12,6 +12,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("JacksonIgnoreNullFalseZeroFilter")
 @Entity
 @Table(name="ITEMS")
 public class Item{

@@ -1,12 +1,23 @@
 package ca.flearning.restfulgloom.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("JacksonIgnoreNullFalseZeroFilter")
 @Entity
 @Table(name="ABILITY_CARDS")
 public class AbilityCard {
@@ -23,6 +34,15 @@ public class AbilityCard {
 	private int initiative = -1;
 	@Column(name="image_path")
 	private String imgPath;
+	
+	@OneToMany(mappedBy = "abilityCard", cascade = CascadeType.ALL)
+	private List<AbilityActionLine> actionLines = new ArrayList<AbilityActionLine>();
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "ABILITY_CARDS_NOTES", 
+             joinColumns = { @JoinColumn(name = "ability_card_id") }, 
+             inverseJoinColumns = { @JoinColumn(name = "note_id") })
+	private List<Note> notes = new ArrayList<Note>();
 	
 	public AbilityCard() {}
 
@@ -65,4 +85,21 @@ public class AbilityCard {
 	public void setImgPath(String imgPath) {
 		this.imgPath = imgPath;
 	}
+
+	public List<AbilityActionLine> getActionLines() {
+		return actionLines;
+	}
+
+	public void setActionLines(List<AbilityActionLine> actionLines) {
+		this.actionLines = actionLines;
+	}
+
+	public List<Note> getNotes() {
+		return notes;
+	}
+
+	public void setNotes(List<Note> notes) {
+		this.notes = notes;
+	}
+	
 }

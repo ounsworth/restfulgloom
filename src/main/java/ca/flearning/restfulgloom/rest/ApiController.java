@@ -27,8 +27,7 @@ public class ApiController {
 		topLinks.add(linkTo(ApiController.class).withSelfRel());
 		topLinks.add(linkTo(methodOn(ApiController.class).auth()).withRel("authenticate"));
 		topLinks.add(linkTo(ApiController.class).slash("dm").withRel("datamodel"));
-		topLinks.add(new Link("https://github.com/Trequetrum/RestfulGloom", "github"));
-		
+		topLinks.add(Link.of("https://github.com/Trequetrum/RestfulGloom", "github"));
 		return topLinks;
 	}
 	

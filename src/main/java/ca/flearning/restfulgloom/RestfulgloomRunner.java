@@ -252,7 +252,7 @@ public class RestfulgloomRunner implements ApplicationRunner{
 			br.close();
 			// check that they key is there and the right length
 			if (key != null && Base64Utils.decodeFromString(key).length == JWT_KEY_LEN) {
-				JWTToken.setSECRET(key);
+				JWTToken.setSigningKey(key);
 				System.out.println("    JWT signing key loaded from disk");
 			} else {
 				throw new KeyStoreException("JWT Signing key in invalid format.");

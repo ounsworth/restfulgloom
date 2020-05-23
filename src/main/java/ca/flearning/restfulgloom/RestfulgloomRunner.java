@@ -1,9 +1,16 @@
 package ca.flearning.restfulgloom;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.KeyStoreException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,24 +22,32 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.RepresentationModelProcessor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Base64Utils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.flearning.restfulgloom.entities.AbilityActionLine;
 import ca.flearning.restfulgloom.entities.AbilityCard;
-import ca.flearning.restfulgloom.entities.Character;
 import ca.flearning.restfulgloom.entities.Equip;
+import ca.flearning.restfulgloom.entities.GCharacter;
 import ca.flearning.restfulgloom.entities.GClass;
 import ca.flearning.restfulgloom.entities.Item;
 import ca.flearning.restfulgloom.entities.Note;
 import ca.flearning.restfulgloom.entities.Perk;
+import ca.flearning.restfulgloom.entities.Wallet;
+import ca.flearning.restfulgloom.security.JWTToken;
 
+// This is not a production level class, so warnings for unused functions and such 
+// can be ignored without a heavy heart.
+@SuppressWarnings("unused")
 @Component
-public class RestfulgloomRunner implements CommandLineRunner{
+public class RestfulgloomRunner implements ApplicationRunner{
 
 	@Autowired // Tell the application-context to inject our EMF
 	private EntityManagerFactory entityManagerFactory;
@@ -40,8 +55,8 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	@Autowired
 	private ApplicationContext ac;
 	
-	//@Autowired
-	//private PasswordEncoder pe;
+	@Value("${ca.flearning.restfulgloom.data.items}")
+	private String itemInfoFile;
 	
 	/****
 	 * Not sure where this kinda thing really belongs. 
@@ -52,11 +67,15 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	 * production code.
 	 ****/
 	@Override
-	public void run(String... args) throws Exception {
-		System.out.println("    >> CommandLineRunner");
+	public void run(ApplicationArguments arg0) throws Exception {
+		System.out.println("    >> CommandLineRunner start");
+		
+		//ItemInfoConverter.hardCodedConversion();
 		
 		addDataToH2Database();
 		//printAllBeanNames();
+
+		createJWTSigningKey();
 		
         System.out.println("    >> CommandLineRunner done");
     }
@@ -78,38 +97,29 @@ public class RestfulgloomRunner implements CommandLineRunner{
         EntityManager em = entityManagerFactory.createEntityManager();
         em.getTransaction().begin();
         
-        // Generate list of items. They're just named with numbers.
-        // Clearly not real items
-        List<Item> li = new ArrayList<Item>();
-        for(int i = 0; i < 10; i++) {
-        	li.add(new Item(i, "Item#000" + i));
-        }
-        for(int i = 10; i <= 30; i++) {
-        	li.add(new Item(i, "Item#00" + i));
-        }
-        
-        // Persist these items in the DB
-        li.forEach(o -> em.persist(o));
+        // Generate and persist items in the DB
+        Item[] gloomItems = generateItemsFromJSON();
+        Arrays.stream(gloomItems).forEach(o -> em.persist(o));
         
         // Generate some characters, give them a name, note, and some random items
-        List<Character> lc = new ArrayList<Character>();
-        lc.add(genRandomChar("Miles", "This Character is going places", li));
-        lc.add(genRandomChar("Golum", "My precious?", li));
-        lc.add(genRandomChar("3mily", "ZAP ZAP ZAP!", li));
-        lc.add(genRandomChar("Yap", "YapYapYapYapYapYapYapYapYapYapYapYapYapYapYapYap", li));
-        lc.add(genRandomChar("McHammer", "Can't touch this", li));
-        lc.add(genRandomChar("Adrian", "Give me all dem itamz plz!", li));
-        lc.add(genRandomChar("Mike", "Nice try Mike", li));
-        lc.add(genRandomChar("Kiss", "Out of love, there's nobody around, all I hear is the sound of a broken heart", li));
-        lc.add(genRandomChar("Hoobastank", "I'm not a perfect person", li));
-        lc.add(genRandomChar("Verbose", prettyLongString(), li));
+        List<GCharacter> lc = new ArrayList<GCharacter>();
+        lc.add(genRandomChar("Miles", "This Character is going places", gloomItems));
+        lc.add(genRandomChar("Golum", "My precious?", gloomItems));
+        lc.add(genRandomChar("3mily", "ZAP ZAP ZAP!", gloomItems));
+        lc.add(genRandomChar("Yap", "YapYapYapYapYapYapYapYapYapYapYapYapYapYapYapYap", gloomItems));
+        lc.add(genRandomChar("McHammer", "Can't touch this", gloomItems));
+        lc.add(genRandomChar("Adrian", "Give me all dem itamz plz!", gloomItems));
+        lc.add(genRandomChar("Mike", "Nice try Mike", gloomItems));
+        lc.add(genRandomChar("Kiss", "Out of love, there's nobody around, all I hear is the sound of a broken heart", gloomItems));
+        lc.add(genRandomChar("Hoobastank", "I'm not a perfect person", gloomItems));
+        lc.add(genRandomChar("Verbose", prettyLongString(), gloomItems));
        
      	// Persist these characters in the DB
         lc.forEach(o -> em.persist(o));
         
         // Generate some Ability Action lines (Not sure if I'm into these yet, but meh, we'll see where it goes.)
         List<AbilityActionLine> laal = new ArrayList<AbilityActionLine>();
-        for(Character c : lc) {
+        for(GCharacter c : lc) {
         	for(AbilityCard ac : c.getAbilityCards()) {
         		AbilityActionLine newline1 = new AbilityActionLine();
         		newline1.setAbilityCard(ac);
@@ -142,25 +152,50 @@ public class RestfulgloomRunner implements CommandLineRunner{
         em.getTransaction().commit();
         em.close();
 	}
-	private Character genRandomChar(String name, String note, List<Item> li) {
+	
+	private Item[] generateItemsFromJSON() {
+		
+		File itemInfoFile = new File(this.itemInfoFile);
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.readValue(itemInfoFile, Item[].class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	private GCharacter genRandomChar(String name, String note, Item[] li) {
 		
 		Random rand = new Random(); 
 		 
-		Character rtn = new Character();
+		GCharacter rtn = new GCharacter();
 		rtn.setName(name);
-		rtn.setHealth(rand.nextInt(18));
 		rtn.setExp(50 + rand.nextInt(150));
-		rtn.setGold(10 + rand.nextInt(100));
+		rtn.setWallet(new Wallet(
+				10 + rand.nextInt(100), 
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10),
+				rand.nextInt(10)));
 		rtn.setCheckMarks(rand.nextInt(18));
 		
 		rtn.setCharClass(new GClass());
 	
 		// Give the character 3 different unique items. 
-		Collections.shuffle(li);	
-		if (li.size() > 2) {
-			rtn.getEquiped().add(new Equip(rtn, "inventory", li.get(0)));
-			rtn.getEquiped().add(new Equip(rtn, "inventory", li.get(1)));
-			rtn.getEquiped().add(new Equip(rtn, "inventory", li.get(2)));
+		// Equip them all, even if that doesn't make any sense
+		List<Item> gloomItems = Arrays.asList(li);
+		Collections.shuffle(gloomItems);	
+		if (gloomItems.size() > 2) {
+			rtn.getEquiped().add(new Equip(rtn, true, gloomItems.get(0)));
+			rtn.getEquiped().add(new Equip(rtn, true, gloomItems.get(1)));
+			rtn.getEquiped().add(new Equip(rtn, true, gloomItems.get(2)));
 		}
 		
 		AbilityCard ac1 = new AbilityCard();
@@ -193,7 +228,7 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	private String prettyLongString() {
 		StringBuilder contentBuilder = new StringBuilder();
 		
-	    try (Stream<String> stream = Files.lines( Paths.get("src/main/resources/static/prettyLongString.txt"), StandardCharsets.UTF_8)) {
+	    try (Stream<String> stream = Files.lines( Paths.get("src/main/resources/data/prettyLongString.txt"), StandardCharsets.UTF_8)) {
 	        stream.forEach(s -> contentBuilder.append(s).append("\n"));
 	    }catch (IOException e) {
 	        e.printStackTrace();
@@ -201,7 +236,62 @@ public class RestfulgloomRunner implements CommandLineRunner{
 	    
 	    return contentBuilder.toString();
 	}
+
+	@Value("${ca.flearning.restfulgloom.api.security.jwtkeyfile}")
+	private String JWT_KEY_FILE;
+
+	private final int JWT_KEY_LEN = 32;
+
+	@Autowired
+	private ConfigurableApplicationContext ctx;
 	
-	
+	private void createJWTSigningKey() {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(JWT_KEY_FILE));
+			String key = br.readLine();
+			br.close();
+			// check that they key is there and the right length
+			if (key != null && Base64Utils.decodeFromString(key).length == JWT_KEY_LEN) {
+				JWTToken.setSigningKey(key);
+				System.out.println("    JWT signing key loaded from disk");
+			} else {
+				throw new KeyStoreException("JWT Signing key in invalid format.");
+			}
+		} catch (Exception e) {
+			// something went wrong, let's create a new key
+			File keyFile = new File(JWT_KEY_FILE);
+
+			// delete it if it exists
+			try {
+				keyFile.delete();
+			} catch (Exception ex) {
+				// do nothing
+			}
+
+			// mkdir
+			try {
+				keyFile.getParentFile().mkdirs();
+			} catch (Exception ex) {
+				// do nothing
+			}
+
+			// create new key
+			try {
+				System.out.println("    Generating new JWT signing key");
+				byte[] keybytes = new byte[JWT_KEY_LEN];
+				SecureRandom.getInstanceStrong().nextBytes(keybytes);
+				BufferedWriter writer = new BufferedWriter(new FileWriter(JWT_KEY_FILE));
+				writer.write(Base64Utils.encodeToString(keybytes));
+				writer.close();
+
+				System.out.println("    JWT signing key written to "+JWT_KEY_FILE);
+			} catch (Exception ex) {
+				// This is fatal because it means we don't have a JWT signing key
+				System.err.println("    FATAL: could not read or create a JWT signing key");
+				System.err.println(ex);
+				ctx.close();
+			}
+		}
+	}
 
 }

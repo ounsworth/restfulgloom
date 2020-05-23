@@ -6,11 +6,11 @@ public class EquipId implements Serializable{
 
 	private static final long serialVersionUID = 1134443579119744890L;
 
-	private Character equipedTo;
+	private GCharacter equipedTo;
 	private Item equipedItem;
 
 	public EquipId() {}
-	public EquipId(Character equipedTo, Item equipedItem) {
+	public EquipId(GCharacter equipedTo, Item equipedItem) {
 		this.equipedTo = equipedTo;
 		this.equipedItem = equipedItem;
 	}

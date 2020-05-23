@@ -3,7 +3,6 @@ package ca.flearning.restfulgloom;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 /*******************
  *  @SpringBootApplication annotation is really just a grouping of three other annotations.
  *  
@@ -19,14 +18,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *  	java config files and REALLY minimize ComponentScan. As is, it's a concern for a later date)
  *******************/
 @SpringBootApplication
-public class RestfulgloomApplication{
-	
-	/*******************
-	 * Entry point for our application. 
-	 * Are you not entertained?
-	 *******************/
+public class RestfulGloomApplication {
+
 	public static void main(String[] args) {
-		
+	
 		/*
 		 * By default, this is what SpringApplication does for us;
 		 * 
@@ -40,6 +35,7 @@ public class RestfulgloomApplication{
 		 * 		... customize application settings ...
 		 * 		application.run(args)
 		 */
-		SpringApplication.run(RestfulgloomApplication.class, args);
+		SpringApplication.run(RestfulGloomApplication.class, args);
 	}
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,40 +17,49 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 
+@JsonFilter("JacksonIgnoreNullFalseZeroFilter")
 @Entity
 @Table(name="CHARACTERS")
-public class Character {
+public class GCharacter {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long characterId;
+	private long characterId = -1;
 	
-	@Column(name="health", nullable=false)
-	private int health = 0;
-	@Column(name="exp", nullable=false)
-	private int exp = 0;
-	@Column(name="gold", nullable=false)
-	private int gold = 0;
-	@Column(name="check_marks", nullable=false)
-	private int checkMarks = 0;
 	@Column(name="name", nullable=false)
 	private String name = "No Name";
+	@Column(name="exp")
+	private int exp = -1;
+	@Column(name="check_marks")
+	private int checkMarks = -1;
 	
-	@ManyToOne(optional=false, cascade=CascadeType.PERSIST)
+	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinColumn(name="wallet_id")
+	private Wallet wallet = new Wallet();
+	
+	@ManyToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="class_id")
-	private GClass charClass = new GClass();
+	private GClass characterClass = new GClass();
+	
+	@ManyToOne(cascade=CascadeType.PERSIST)
+	@JoinColumn(name="personal_quest_id")
+	private PersonalQuest personalQuest = new PersonalQuest();
 	
 	@OneToMany(mappedBy = "equipedTo", cascade = CascadeType.ALL)
 	private List<Equip> equiped = new ArrayList<Equip>();
 	
-	@ManyToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "baseCharacter", cascade = CascadeType.ALL)
+	private List<ActiveCharacter> activeCharacters = new ArrayList<ActiveCharacter>();
+	
+	@ManyToMany(cascade=CascadeType.PERSIST)
     @JoinTable(name = "CHARACTERS_ABILITY_CARDS", 
              joinColumns = { @JoinColumn(name = "character_id") }, 
              inverseJoinColumns = { @JoinColumn(name = "ability_card_id") })
 	private List<AbilityCard> abilityCards = new ArrayList<AbilityCard>();
 	
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade=CascadeType.PERSIST)
     @JoinTable(name = "CHARACTERS_PERKS", 
              joinColumns = { @JoinColumn(name = "character_id") }, 
              inverseJoinColumns = { @JoinColumn(name = "perk_id") })
@@ -61,7 +71,7 @@ public class Character {
              inverseJoinColumns = { @JoinColumn(name = "note_id") })
 	private List<Note> notes = new ArrayList<Note>();
 	
-	public Character() {}
+	public GCharacter() {}
 
 	public long getCharacterId() {
 		return characterId;
@@ -71,28 +81,12 @@ public class Character {
 		this.characterId = characterId;
 	}
 
-	public int getHealth() {
-		return health;
-	}
-
-	public void setHealth(int health) {
-		this.health = health;
-	}
-
 	public int getExp() {
 		return exp;
 	}
 
 	public void setExp(int exp) {
 		this.exp = exp;
-	}
-
-	public int getGold() {
-		return gold;
-	}
-
-	public void setGold(int gold) {
-		this.gold = gold;
 	}
 
 	public int getCheckMarks() {
@@ -112,11 +106,11 @@ public class Character {
 	}
 
 	public GClass getCharClass() {
-		return charClass;
+		return characterClass;
 	}
 
 	public void setCharClass(GClass charClass) {
-		this.charClass = charClass;
+		this.characterClass = charClass;
 	}
 
 	public List<Equip> getEquiped() {
@@ -150,4 +144,38 @@ public class Character {
 	public void setNotes(List<Note> notes) {
 		this.notes = notes;
 	}
+
+	public Wallet getWallet() {
+		return wallet;
+	}
+
+	public void setWallet(Wallet wallet) {
+		this.wallet = wallet;
+	}
+
+	public GClass getCharacterClass() {
+		return characterClass;
+	}
+
+	public void setCharacterClass(GClass characterClass) {
+		this.characterClass = characterClass;
+	}
+
+	public PersonalQuest getPersonalQuest() {
+		return personalQuest;
+	}
+
+	public void setPersonalQuest(PersonalQuest personalQuest) {
+		this.personalQuest = personalQuest;
+	}
+
+	public List<ActiveCharacter> getActiveCharacters() {
+		return activeCharacters;
+	}
+
+	public void setActiveCharacters(List<ActiveCharacter> activeCharacters) {
+		this.activeCharacters = activeCharacters;
+	}
+	
+	
 }

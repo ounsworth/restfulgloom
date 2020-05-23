@@ -27,20 +27,7 @@ public class LoginController {
 
 
         // create a refresh token and persist it to the db
-
-        RefreshToken refreshToken = RefreshToken.generateToken();
-        refreshToken.setUsername(user.getName());
-        try {
-            refreshTokenRepository.save(refreshToken);
-        } catch (Exception e) {
-            // probably the random token happened to be a duplicate, and the DB threw
-            // a constraint violation.
-            // Try again.
-
-            refreshToken = RefreshToken.generateToken();
-            refreshToken.setUsername(user.getName());
-            refreshTokenRepository.save(refreshToken);
-        }
+        RefreshToken refreshToken = createRefreshToken(user);
 
         // TODO: this should be HATEOAS and return a link to the refresh URI (complete with token path)
         // TODO: or should login be an exception to HATEOAS?
@@ -49,7 +36,7 @@ public class LoginController {
 
 
     @GetMapping("/refresh/{refreshToken}")
-    public JWTToken.Token refresh(@PathVariable("refreshToken") String refreshTokenStr) {
+    public JwtAndRefresh refresh(@PathVariable("refreshToken") String refreshTokenStr) {
         JWTToken token;
 
         List<RefreshToken> refreshTokenList = refreshTokenRepository.findByToken(refreshTokenStr);
@@ -69,14 +56,39 @@ public class LoginController {
             User user = new User();
             user.setName(refreshToken.getUsername());
             token = new JWTToken(user);
+
+            // create a refresh token and persist it to the db
+            RefreshToken newRefreshToken = createRefreshToken(user);
+
+
+            // TODO: this should be HATEOAS and return a link to the refresh URI (complete with token path)
+            // TODO: or should login be an exception to HATEOAS?
+            return new JwtAndRefresh(token.getCredentials(), newRefreshToken);
         } else {
             // uhh, panic? The DB should enforce that as a unique field.
             throw new RuntimeException("DB should never have multiple entries for the same refresh token");
         }
-
-        return token.getCredentials();
+        // no return because it's unreachable.
     }
 
+    private RefreshToken createRefreshToken(User user) {
+        // create a refresh token and persist it to the db
+        RefreshToken refreshToken = RefreshToken.generateToken();
+        refreshToken.setUsername(user.getName());
+        try {
+            refreshTokenRepository.save(refreshToken);
+        } catch (Exception e) {
+            // probably the random token happened to be a duplicate, and the DB threw
+            // a constraint violation.
+            // Try again.
+
+            refreshToken = RefreshToken.generateToken();
+            refreshToken.setUsername(user.getName());
+            refreshTokenRepository.save(refreshToken);
+        }
+
+        return refreshToken;
+    }
 
     class JwtAndRefresh {
         String token;

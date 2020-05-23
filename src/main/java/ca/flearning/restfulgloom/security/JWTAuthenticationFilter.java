@@ -27,6 +27,9 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
                 throw new BadCredentialsException("No " + AUTH_HEADER + " header");
             }
 
+            // remove the word "bearer", if there is one.
+            token = token.replaceAll("(?i)bearer", "").trim();
+
             // parse the token.
             JWTToken authentication = new JWTToken(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);

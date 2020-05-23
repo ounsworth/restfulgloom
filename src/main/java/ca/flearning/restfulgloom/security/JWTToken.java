@@ -20,11 +20,11 @@ public class JWTToken implements Authentication {
 	// Constants are probably a bad idea and should be put into application.properties?
     private static final long EXPIRATION_TIME = 900_000;  // 15 mins
 
-    private static String SECRET = null;  // I would rather throw an NPE than silently use a weak key.
+    private static String signingKey = null;  // I would rather throw an NPE than silently use a weak key.
                                           // Should be set during boot by RestfulgloomRunner
 
-    public static void setSECRET(String SECRET) {
-        JWTToken.SECRET = SECRET;
+    public static void setSigningKey(String signingKey) {
+        JWTToken.signingKey = signingKey;
     }
 
     public static final String ISSUER = "ca.flearning.restfulgloom";
@@ -69,7 +69,7 @@ public class JWTToken implements Authentication {
 
         try {
             Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(SECRET)
+                    .setSigningKey(signingKey)
                     .parseClaimsJws(token);
 
             String issuer = claims.getBody().getIssuer();
@@ -113,7 +113,7 @@ public class JWTToken implements Authentication {
                         .setExpiration(new Date(System.currentTimeMillis() + JWTToken.EXPIRATION_TIME))
                         .setIssuer(JWTToken.ISSUER)
                         .setAudience(JWTToken.ISSUER)
-                        .signWith(SignatureAlgorithm.HS256, JWTToken.SECRET)
+                        .signWith(SignatureAlgorithm.HS256, JWTToken.signingKey)
                         .compact()
                 );
             }

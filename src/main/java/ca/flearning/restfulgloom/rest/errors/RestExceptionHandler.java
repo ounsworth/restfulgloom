@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -23,7 +24,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-// All exceptions used by out rest endpoints should be handled here. If handled
+// All exceptions used by our rest endpoints should be handled here. If handled
 // elsewhere, pay attention to @order, as this swallows up all exceptions eventually
 @ControllerAdvice(basePackages = "ca.flearning.restfulgloom.rest")
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -132,27 +133,36 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	/*****************************
-    * Custom Exception handlers
-    *****************************/
-   @ExceptionHandler(ForbiddenException.class)
-   protected ResponseEntity<Object> handleForbiddenException(ForbiddenException ex) {
-       ApiError apiError = new ApiError(HttpStatus.FORBIDDEN);
-       apiError.setMessage(ex.getMessage());
-       return buildResponseEntity(apiError);
-   }
+	 * Exceptions not covered by ResponseEntityExceptionHandler overrides
+	 *****************************/
+	@ExceptionHandler(AccessDeniedException.class)
+	protected ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
+		ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ex);
+		return buildResponseEntity(apiError);
+	}
+	
+	/*****************************
+     * Custom Exceptions
+     *****************************/
+	@ExceptionHandler(ForbiddenException.class)
+	protected ResponseEntity<Object> handleForbiddenException(ForbiddenException ex) {
+		ApiError apiError = new ApiError(HttpStatus.FORBIDDEN);
+		apiError.setMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
+	}
 
-   /*****************************
-    * Handle Everything Else
-    *****************************/
-   @ExceptionHandler(Exception.class)
-   protected ResponseEntity<Object> handleException(Exception ex) {
-	   return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "error", ex));
-   }
+	/*****************************
+	* Handle Everything Else
+	*****************************/
+	@ExceptionHandler(Exception.class)
+	protected ResponseEntity<Object> handleException(Exception ex) {
+		return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "error", ex));
+	}
    
-   /*****************************
+	/*****************************
     * Turn an ApiError into a ResponseEntity
     *****************************/
-   private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
-       return new ResponseEntity<>(apiError, apiError.getStatus());
-   }
+	private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
+		return new ResponseEntity<>(apiError, apiError.getStatus());
+	}
 }
